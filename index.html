@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rezervacija mize – Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="container">
+    <h1>Restavracija Demo</h1>
+    <nav>
+      <a href="#" id="nav-home">Domov</a>
+      <a href="#rezervacija" id="nav-book">Rezerviraj mizo</a>
+      <a href="#moje" id="nav-my">Moje rezervacije</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Home -->
+    <section id="home">
+      <h2>Dobrodošli</h2>
+      <p>Preko te strani lahko hitro rezervirate mizo.</p>
+      <a class="btn" href="#rezervacija">Rezerviraj mizo</a>
+    </section>
+
+    <!-- Booking form -->
+    <section id="rezervacija" class="hidden">
+      <h2>Rezervacija</h2>
+      <form id="bookingForm">
+        <div class="grid">
+          <label>Ime in priimek
+            <input type="text" name="name" required />
+          </label>
+          <label>E-pošta
+            <input type="email" name="email" required />
+          </label>
+          <label>Telefon
+            <input type="tel" name="phone" required />
+          </label>
+          <label>Datum
+            <input type="date" name="date" required />
+          </label>
+          <label>Ura
+            <input type="time" name="time" required />
+          </label>
+          <label>Število oseb
+            <input type="number" name="guests" min="1" max="12" value="2" required />
+          </label>
+          <label>Opombe (neobvezno)
+            <textarea name="note" placeholder="Alergije, otroški stol …"></textarea>
+          </label>
+        </div>
+        <button class="btn" type="submit">Oddaj rezervacijo</button>
+      </form>
+
+      <div id="confirm" class="alert hidden" role="status"></div>
+    </section>
+
+    <!-- My reservations -->
+    <section id="moje" class="hidden">
+      <h2>Moje rezervacije</h2>
+      <ul id="myList" class="list"></ul>
+    </section>
+  </main>
+
+  <footer class="container small">
+    © 2025 Restavracija Demo
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
