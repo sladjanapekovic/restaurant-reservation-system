@@ -23,3 +23,11 @@ textarea { min-height: 80px; }
 .note { margin: 10px 0 14px; font-size: 14px; color:#444; }
 
 @media (max-width:700px){ .grid { grid-template-columns:1fr; } }
+
+/* slots grid */
+.slots { display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:10px; margin:10px 0 20px; }
+.slot-btn { padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:#f7f7f7; cursor:pointer; }
+.slot-btn:hover { background:#eee; }
+.slot-btn.free { border-color:#2e7d32; }
+.slot-btn.busy { color:#888; background:#fafafa; border-style:dashed; cursor:not-allowed; }
+.slot-btn.selected { outline:2px solid #0a66c2; background:#eaf3ff; }
