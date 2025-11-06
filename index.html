@@ -79,6 +79,35 @@
     </section>
   </main>
 
+  <!-- EDIT dialog -->
+  <dialog id="editDialog">
+    <form method="dialog" id="editForm" class="edit-form">
+      <h3>Uredi rezervacijo</h3>
+      <input type="hidden" name="id" id="editId"/>
+      <div class="grid">
+        <label>Datum
+          <input type="date" name="date" id="editDate" required />
+        </label>
+        <label>Ura
+          <select name="time" id="editTimeSelect" required>
+            <option value="">— izberi termin —</option>
+          </select>
+        </label>
+        <label>Število oseb
+          <input type="number" name="guests" id="editGuests" min="1" max="12" required />
+        </label>
+        <label>Opomba
+          <textarea name="note" id="editNote" placeholder="Alergije, otroški stol …"></textarea>
+        </label>
+      </div>
+      <p id="editAvailability" class="note"></p>
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn-outline">Prekliči</button>
+        <button id="editSaveBtn" value="default" class="btn">Shrani spremembe</button>
+      </menu>
+    </form>
+  </dialog>
+
   <footer class="container small">
     © 2025 Restavracija Demo
   </footer>
