@@ -16,7 +16,7 @@ const OPEN_HOUR = 10;       // 10:00
 const CLOSE_HOUR = 22;      // 22:00
 const SLOT_STEP_MIN = 30;   // termini na 30 min
 const SLOT_MINUTES = 90;    // rezervacija zasede 90 min
-const MAX_TABLES = 10;      // hkrati največ miz na termin
+const MAX_TABLES = 10;      // največ miz hkrati na termin
 
 function getReservations() {
   try { return JSON.parse(localStorage.getItem(KEY)) || []; }
@@ -60,6 +60,7 @@ function refreshTimeOptions(){
   const date = form.elements["date"].value;
   if (!date) {
     timeSelect.innerHTML = `<option value="">— izberi termin —</option>`;
+    document.getElementById("slotGrid").innerHTML = "";
     return;
   }
   const allSlots = makeSlotsForDate(date);
@@ -70,6 +71,7 @@ function refreshTimeOptions(){
 
   timeSelect.value = "";         // počisti staro izbiro
   updateAvailability();          // osveži informativno sporočilo
+  renderSlotGrid(date);          // osveži grid gumbov
 }
 
 // besedilni prikaz PROST/ZASEDEN za izbran termin
@@ -97,10 +99,46 @@ function updateAvailability() {
   }
 }
 
+// klikabilni gumbi terminov pod obrazcem
+function renderSlotGrid(date) {
+  const grid = document.getElementById("slotGrid");
+  if (!date) { grid.innerHTML = ""; return; }
+
+  const allSlots = makeSlotsForDate(date);
+  grid.innerHTML = "";
+
+  allSlots.forEach(t => {
+    const used = reservationsInSlot(date, t);
+    const free = MAX_TABLES - used > 0;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = t;
+    btn.className = "slot-btn " + (free ? "free" : "busy");
+    btn.disabled = !free;
+
+    if (form.elements["time"].value === t) btn.classList.add("selected");
+
+    if (free) {
+      btn.addEventListener("click", () => {
+        form.elements["time"].value = t;      // nastavi <select>
+        updateAvailability();
+        grid.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      });
+    }
+
+    grid.appendChild(btn);
+  });
+}
+
 // sprožimo osvežitve ob spremembah
 form.elements["date"].addEventListener("change", refreshTimeOptions);
 form.elements["guests"].addEventListener("change", refreshTimeOptions);
-timeSelect.addEventListener("change", updateAvailability);
+timeSelect.addEventListener("change", () => {
+  updateAvailability();
+  renderSlotGrid(form.elements["date"].value);
+});
 
 // oddaja obrazca
 form.addEventListener("submit", (e) => {
@@ -134,6 +172,7 @@ form.addEventListener("submit", (e) => {
 
   // po oddaji: osveži termin liste in info
   refreshTimeOptions();
+  renderSlotGrid(reservation.date);
   show("moje");
 });
 
