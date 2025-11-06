@@ -22,10 +22,24 @@ function getReservations() {
   try { return JSON.parse(localStorage.getItem(KEY)) || []; }
   catch { return []; }
 }
+function setReservations(list) {
+  localStorage.setItem(KEY, JSON.stringify(list));
+}
 function saveReservation(r) {
   const all = getReservations();
   all.push(r);
-  localStorage.setItem(KEY, JSON.stringify(all));
+  setReservations(all);
+}
+function deleteReservation(id) {
+  const all = getReservations().filter(r => r.id !== id);
+  setReservations(all);
+}
+function findReservation(id) {
+  return getReservations().find(r => r.id === id);
+}
+function updateReservation(updated) {
+  const all = getReservations().map(r => r.id === updated.id ? updated : r);
+  setReservations(all);
 }
 
 // ----- helpers za termine -----
@@ -45,8 +59,9 @@ function overlapsSlot(d1,t1,d2,t2){
   const bStart = toDT(d2,t2), bEnd = new Date(bStart.getTime() + SLOT_MINUTES*60000);
   return aStart.toDateString()===bStart.toDateString() && aStart < bEnd && bStart < aEnd;
 }
-function reservationsInSlot(dateStr, timeStr){
-  return getReservations().filter(r => overlapsSlot(r.date, r.time, dateStr, timeStr)).length;
+// optional ignoreId - ko editiramo, ne štej trenutnega
+function reservationsInSlot(dateStr, timeStr, ignoreId = null){
+  return getReservations().filter(r => (ignoreId ? r.id !== ignoreId : true) && overlapsSlot(r.date, r.time, dateStr, timeStr)).length;
 }
 
 // ----- elementi obrazca -----
@@ -132,7 +147,7 @@ function renderSlotGrid(date) {
   });
 }
 
-// sprožimo osvežitve ob spremembah
+// spremembe v obrazcu
 form.elements["date"].addEventListener("change", refreshTimeOptions);
 form.elements["guests"].addEventListener("change", refreshTimeOptions);
 timeSelect.addEventListener("change", () => {
@@ -140,7 +155,7 @@ timeSelect.addEventListener("change", () => {
   renderSlotGrid(form.elements["date"].value);
 });
 
-// oddaja obrazca
+// oddaja obrazca (create)
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(form).entries());
@@ -150,13 +165,10 @@ form.addEventListener("submit", (e) => {
     confirmBox.style.background = "#fff7e6";
     return;
   }
-
-  // varnostni check: še enkrat preveri zasedenost
   if (reservationsInSlot(data.date, data.time) >= MAX_TABLES) {
     updateAvailability();
     return;
   }
-
   const reservation = {
     id: crypto.randomUUID(),
     ...data,
@@ -170,13 +182,12 @@ form.addEventListener("submit", (e) => {
   confirmBox.style.background = "";
   form.reset();
 
-  // po oddaji: osveži termin liste in info
   refreshTimeOptions();
   renderSlotGrid(reservation.date);
   show("moje");
 });
 
-// prikaz seznama rezervacij
+// prikaz seznama rezervacij (z gumbi Uredi/Prekliči)
 function renderMyReservations() {
   const list = document.getElementById("myList");
   const all = getReservations()
@@ -184,14 +195,127 @@ function renderMyReservations() {
   list.innerHTML = all.length ? "" : "<li>Ni rezervacij.</li>";
   all.forEach(r => {
     const li = document.createElement("li");
-    li.innerHTML = `
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.innerHTML = `
       <strong>${r.date} ob ${r.time}</strong> — ${r.guests} oseb<br/>
       Na ime: ${r.name} • ${r.phone} • ${r.email}
       ${r.note ? `<div>Opomba: ${r.note}</div>` : ""}
     `;
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn-sm";
+    editBtn.textContent = "Uredi";
+    editBtn.addEventListener("click", () => openEditDialog(r.id));
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn-sm btn-danger";
+    delBtn.textContent = "Prekliči";
+    delBtn.addEventListener("click", () => {
+      if (confirm("Res želite preklicati rezervacijo?")) {
+        deleteReservation(r.id);
+        renderMyReservations();
+        // osveži tudi obrazec razpoložljivosti
+        refreshTimeOptions();
+      }
+    });
+
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+
+    li.appendChild(meta);
+    li.appendChild(actions);
     list.appendChild(li);
   });
 }
+
+/* ====== EDIT dialog ====== */
+const editDialog = document.getElementById("editDialog");
+const editForm = document.getElementById("editForm");
+const editDate = document.getElementById("editDate");
+const editTimeSelect = document.getElementById("editTimeSelect");
+const editGuests = document.getElementById("editGuests");
+const editNote = document.getElementById("editNote");
+const editAvailability = document.getElementById("editAvailability");
+const editSaveBtn = document.getElementById("editSaveBtn");
+
+function fillEditTimeOptions(dateStr, ignoreId){
+  const allSlots = makeSlotsForDate(dateStr);
+  const available = allSlots.filter(t => reservationsInSlot(dateStr, t, ignoreId) < MAX_TABLES);
+  editTimeSelect.innerHTML = `<option value="">— izberi termin —</option>` +
+    available.map(t => `<option value="${t}">${t}</option>`).join("");
+}
+
+function updateEditAvailability(ignoreId){
+  const date = editDate.value;
+  const time = editTimeSelect.value;
+  if (!date || !time) { editAvailability.textContent = ""; editSaveBtn.disabled = false; return; }
+  const used = reservationsInSlot(date, time, ignoreId);
+  const free = MAX_TABLES - used;
+  if (free > 0) {
+    editAvailability.textContent = `Termin je PROST — na voljo še ${free} miz(e).`;
+    editAvailability.style.color = "#2e7d32";
+    editSaveBtn.disabled = false;
+  } else {
+    editAvailability.textContent = "Termin je ZASEDEN — izberi drugo uro.";
+    editAvailability.style.color = "#c62828";
+    editSaveBtn.disabled = true;
+  }
+}
+
+function openEditDialog(id){
+  const r = findReservation(id);
+  if (!r) return;
+
+  document.getElementById("editId").value = r.id;
+  editDate.value = r.date;
+  editGuests.value = r.guests;
+  editNote.value = r.note || "";
+
+  fillEditTimeOptions(r.date, r.id);
+  editTimeSelect.value = r.time || "";
+
+  updateEditAvailability(r.id);
+
+  // listeners (enkratni – zamenjamo z novimi vsakič)
+  editDate.onchange = () => { fillEditTimeOptions(editDate.value, r.id); editTimeSelect.value=""; updateEditAvailability(r.id); };
+  editTimeSelect.onchange = () => updateEditAvailability(r.id);
+  editGuests.oninput = () => {}; // (trenutno ni odvisnosti od št. oseb)
+
+  editDialog.showModal();
+}
+
+editForm.addEventListener("close", () => { /* noop */ });
+
+editForm.addEventListener("submit", (e) => {
+  e.preventDefault(); // dialog by default submits & closes, zato prestrežemo
+
+  const id = document.getElementById("editId").value;
+  const original = findReservation(id);
+  if (!original) return;
+
+  const updated = {
+    ...original,
+    date: editDate.value,
+    time: editTimeSelect.value,
+    guests: Number(editGuests.value),
+    note: editNote.value
+  };
+
+  // varnostni check razpoložljivosti (brez štetja sebe)
+  if (reservationsInSlot(updated.date, updated.time, updated.id) >= MAX_TABLES) {
+    updateEditAvailability(updated.id);
+    return;
+  }
+
+  updateReservation(updated);
+  editDialog.close();
+
+  renderMyReservations();
+  refreshTimeOptions();
+});
 
 // inicializacija
 show("home");
