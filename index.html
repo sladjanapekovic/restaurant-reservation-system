@@ -41,9 +41,14 @@
           <label>Datum
             <input type="date" name="date" required />
           </label>
+
+          <!-- NOVO: ura kot dinamični dropdown -->
           <label>Ura
-            <input type="time" name="time" required />
+            <select name="time" id="timeSelect" required>
+              <option value="">— izberi termin —</option>
+            </select>
           </label>
+
           <label>Število oseb
             <input type="number" name="guests" min="1" max="12" value="2" required />
           </label>
@@ -52,7 +57,7 @@
           </label>
         </div>
 
-        <!-- NOVO: prikaz zasedenosti izbranega termina -->
+        <!-- info o zasedenosti -->
         <p id="availability" class="note"></p>
 
         <button class="btn" type="submit">Oddaj rezervacijo</button>
