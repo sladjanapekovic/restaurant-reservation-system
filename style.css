@@ -1,45 +1,222 @@
-:root { --gap: 14px; --border: #e6e6e6; }
+/* ======== GLOBAL STYLING ======== */
+:root {
+  --gold: #d4af37;
+  --gold-light: #f0d98a;
+  --bg-dark: #121212;
+  --bg-card: #1b1b1b;
+  --text-light: #e2e2e2;
+  --border: #2a2a2a;
+  --gap: 16px;
+}
+
 * { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; color:#222; }
-.container { max-width: 940px; margin: 0 auto; padding: 18px; }
-header { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border);}
-nav a { margin-left: 12px; text-decoration:none; color:#0a66c2; }
-h1 { font-size: 20px; margin:0; }
-h2 { margin-top: 22px; }
-.btn { display:inline-block; padding:10px 14px; border:1px solid #0a66c2; color:#0a66c2; border-radius:8px; text-decoration:none; background:#fff; cursor:pointer; }
-.btn:hover { background:#0a66c2; color:#fff; }
-.btn-outline { padding:10px 14px; border:1px solid var(--border); border-radius:8px; background:#fff; cursor:pointer; }
-.btn-sm { padding:6px 10px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; }
-.btn-danger { border-color:#cc3b3b; color:#cc3b3b; }
-.btn-danger:hover { background:#cc3b3b; color:#fff; }
+body {
+  margin: 0;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  font-family: "Inter", sans-serif;
+}
 
-.grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--gap); }
-label { display:flex; flex-direction:column; font-size:14px; gap:6px; }
-input, textarea, select { padding:10px; border:1px solid var(--border); border-radius:8px; }
-textarea { min-height: 80px; }
+/* ======== LAYOUT ======== */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-.hidden { display:none; }
-.alert { margin-top: 16px; padding:12px; border:1px solid #c7f0c2; background:#e9fbe6; border-radius:8px; }
-.list { list-style:none; padding:0; margin:0; }
-.list li { border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-.list .meta { flex:1; }
-.actions { display:flex; gap:8px; }
+/* ======== HEADER ======== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
 
-.small { font-size: 13px; color:#666; border-top:1px solid var(--border); }
+h1 {
+  font-size: 22px;
+  color: var(--gold);
+  font-family: "Playfair Display", serif;
+}
 
-.note { margin: 10px 0 14px; font-size: 14px; color:#444; }
+nav a {
+  margin-left: 15px;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text-light);
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
 
-@media (max-width:700px){ .grid { grid-template-columns:1fr; } }
+nav a:hover {
+  color: var(--gold);
+}
 
-/* slots grid */
-.slots { display:grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap:10px; margin:10px 0 20px; }
-.slot-btn { padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:#f7f7f7; cursor:pointer; }
-.slot-btn:hover { background:#eee; }
-.slot-btn.free { border-color:#2e7d32; }
-.slot-btn.busy { color:#888; background:#fafafa; border-style:dashed; cursor:not-allowed; }
-.slot-btn.selected { outline:2px solid #0a66c2; background:#eaf3ff; }
+/* ======== TITLES ======== */
+h2, h3 {
+  color: var(--gold-light);
+  font-family: "Playfair Display", serif;
+}
 
-/* dialog */
-dialog { border:1px solid var(--border); border-radius:12px; padding:18px; max-width: 640px; width: 100%; }
-.edit-form h3 { margin-top:0; }
-.dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:10px; }
+/* ======== BUTTONS ======== */
+.btn, button {
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 15px;
+}
+
+.btn:hover, button:hover {
+  background: var(--gold);
+  color: #000;
+}
+
+.btn-outline {
+  border-color: var(--border);
+  color: var(--text-light);
+}
+
+.btn-outline:hover {
+  background: var(--border);
+}
+
+.btn-danger {
+  border-color: #bb4444;
+  color: #ff6666;
+}
+.btn-danger:hover {
+  background: #bb4444;
+  color: #fff;
+}
+
+/* ======== INPUTS & FORM ======== */
+input, textarea, select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-light);
+}
+
+textarea { min-height: 90px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  gap: 6px;
+}
+
+@media (max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ======== AVAILABILITY INFO ======== */
+.note {
+  font-size: 14px;
+  margin: 10px 0;
+  color: var(--gold-light);
+}
+
+/* ======== SLOT GRID ======== */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.slot-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-light);
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+.slot-btn.free {
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+.slot-btn.free:hover {
+  background: var(--gold);
+  color: #000;
+}
+
+.slot-btn.busy {
+  opacity: 0.4;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.slot-btn.selected {
+  background: var(--gold);
+  color: #000;
+}
+
+/* ======== CARDS: MY RESERVATIONS ======== */
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list li {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ======== DIALOG (Uredi) ======== */
+dialog {
+  background: var(--bg-card);
+  border: 1px solid var(--gold);
+  padding: 20px;
+  border-radius: 14px;
+  color: var(--text-light);
+  max-width: 500px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ======== FOOTER ======== */
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+}
