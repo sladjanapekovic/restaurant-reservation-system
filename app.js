@@ -203,30 +203,49 @@ function renderMyReservations() {
     const li = document.createElement("li");
     const meta = document.createElement("div");
     meta.className = "meta";
-    meta.innerHTML = `
-      <strong>${r.date} ob ${r.time}</strong> — ${r.guests} oseb<br/>
-      Na ime: ${r.name} • ${r.phone} • ${r.email}
-      ${r.note ? `<div>Opomba: ${r.note}</div>` : ""}
-    `;
-
+    const isCancelled = r.status === "cancelled";
+  meta.innerHTML = `
+    <strong>${r.date} ob ${r.time}</strong> — ${r.guests} oseb
+    ${isCancelled ? `<span style="margin-left:8px;color:#c62828;font-weight:700;">PREKLICANO</span>` : ""}
+    <br/>
+    Na ime: ${r.name} • ${r.phone} • ${r.email}
+    ${r.note ? `<div>Opomba: ${r.note}</div>` : ""}
+    ${isCancelled && r.cancelReason ? `<div>Razlog: ${r.cancelReason}</div>` : ""}
+  `;
     const actions = document.createElement("div");
     actions.className = "actions";
     const editBtn = document.createElement("button");
     editBtn.className = "btn-sm";
     editBtn.textContent = "Uredi";
+ if (isCancelled) {
+    editBtn.disabled = true;
+    editBtn.title = "Preklicane rezervacije ni mogoče urejati.";
+ }
     editBtn.addEventListener("click", () => openEditDialog(r.id));
 
     const delBtn = document.createElement("button");
     delBtn.className = "btn-sm btn-danger";
     delBtn.textContent = "Prekliči";
+if (isCancelled) {
+    delBtn.disabled = true;
+    delBtn.textContent = "Preklicano";
+} 
     delBtn.addEventListener("click", () => {
-      if (confirm("Res želite preklicati rezervacijo?")) {
-        deleteReservation(r.id);
-        renderMyReservations();
-        // osveži tudi obrazec razpoložljivosti
-        refreshTimeOptions();
-      }
-    });
+  if (!confirm("Res želite preklicati rezervacijo?")) return;
+
+  const reason = prompt("Razlog preklica (neobvezno):") || "";
+
+  const updated = {
+    ...r,
+    status: "cancelled",
+    cancelledAt: new Date().toISOString(),
+    cancelReason: reason.trim()
+  };
+
+  updateReservation(updated);
+  renderMyReservations();
+  refreshTimeOptions(); // osveži termine, ker se miza sprosti
+});
 
     actions.appendChild(editBtn);
     actions.appendChild(delBtn);
