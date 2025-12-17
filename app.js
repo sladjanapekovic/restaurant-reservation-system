@@ -61,7 +61,12 @@ function overlapsSlot(d1,t1,d2,t2){
 }
 // optional ignoreId - ko editiramo, ne štej trenutnega
 function reservationsInSlot(dateStr, timeStr, ignoreId = null){
-  return getReservations().filter(r => (ignoreId ? r.id !== ignoreId : true) && overlapsSlot(r.date, r.time, dateStr, timeStr)).length;
+  return getReservations()
+    .filter(r =>
+      r.status !== "cancelled" &&
+      (ignoreId ? r.id !== ignoreId : true) &&
+      overlapsSlot(r.date, r.time, dateStr, timeStr)
+    ).length;
 }
 
 // ----- elementi obrazca -----
@@ -170,11 +175,12 @@ form.addEventListener("submit", (e) => {
     return;
   }
   const reservation = {
-    id: crypto.randomUUID(),
-    ...data,
-    guests: Number(data.guests),
-    createdAt: new Date().toISOString()
-  };
+  id: crypto.randomUUID(),
+  status: "active",
+  ...data,
+  guests: Number(data.guests),
+  createdAt: new Date().toISOString()
+};
   saveReservation(reservation);
 
   confirmBox.textContent = `Rezervacija oddana ✅  (${reservation.date} ob ${reservation.time}, ${reservation.guests} osebi)`;
