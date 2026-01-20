@@ -1,1 +1,17 @@
-
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Simple Express backend for CI/CD testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}
