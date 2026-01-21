@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test:frontend": "jest --coverage",
-    "test:backend": "npm --prefix backend test",
+    "test:frontend": "jest -c jest.frontend.config.js --coverage",
+    "test:backend": "jest -c jest.backend.config.js --coverage",
     "test": "npm run test:frontend && npm run test:backend"
   },
   "devDependencies": {
