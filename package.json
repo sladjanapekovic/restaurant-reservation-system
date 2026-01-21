@@ -5,14 +5,15 @@
   "scripts": {
     "test:frontend": "jest -c jest.frontend.config.js --coverage",
     "test:backend": "jest -c jest.backend.config.js --coverage",
-    "test": "npm run test:frontend && npm run test:backend"
-    "build:frontend": "rm -rf dist && mkdir dist && cp index.html app.js style.css dist/",
-    "build:backend": "rm -rf backend/build && mkdir -p backend/build && cp backend/*.js backend/package.json backend/build/"
+    "test": "npm run test:frontend && npm run test:backend",
+    "build:frontend": "mkdir -p dist && cp index.html dist/ && cp app.js dist/ && cp style.css dist/",
+    "build:backend": "mkdir -p backend/build && cp backend/server.js backend/build/server.js",
+    "build": "npm run build:frontend && npm run build:backend"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "supertest": "^7.0.0",
-    "@testing-library/jest-dom": "^6.6.3"
+    "supertest": "^7.0.0"
   }
 }
