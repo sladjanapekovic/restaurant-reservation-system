@@ -52,13 +52,15 @@ describe("Frontend app.js tests", () => {
 
   // 5
   test("Reservation is saved to localStorage", () => {
-    const data = [{
-      id: 1,
-      name: "Ana",
-      date: "2026-01-01",
-      time: "18:00",
-      guests: 2
-    }];
+    const data = [
+      {
+        id: 1,
+        name: "Ana",
+        date: "2026-01-01",
+        time: "18:00",
+        guests: 2
+      }
+    ];
     localStorage.setItem("reservations", JSON.stringify(data));
     const stored = JSON.parse(localStorage.getItem("reservations"));
     expect(stored.length).toBe(1);
@@ -66,7 +68,10 @@ describe("Frontend app.js tests", () => {
 
   // 6
   test("Form submission without required fields shows warning", () => {
-    document.querySelector("form").dispatchEvent(new Event("submit"));
+    document
+      .querySelector("form")
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
     expect(document.getElementById("confirm").classList.contains("hidden")).toBe(false);
   });
 
