@@ -1,0 +1,14 @@
+{
+  "name": "restaurant-reservation-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:frontend": "jest --coverage",
+    "test:backend": "npm --prefix backend test",
+    "test": "npm run test:frontend && npm run test:backend"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
