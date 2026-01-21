@@ -1,4 +1,4 @@
-name: Test Frontend & Backend
+name: CI - Test, Build, Docker, Deploy
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  frontend-tests:
-    name: Frontend tests (Jest + coverage)
+  frontend:
+    name: Frontend - test + build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,11 +20,22 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Cache npm (frontend)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-frontend-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-frontend-
+
       - name: Install frontend deps
         run: npm install
 
       - name: Run frontend tests
         run: npm run test:frontend
+
+      - name: Build frontend
+        run: npm run build:frontend
 
       - name: Upload frontend coverage
         if: always()
@@ -33,8 +44,14 @@ jobs:
           name: coverage-frontend
           path: coverage/frontend
 
-  backend-tests:
-    name: Backend tests (Jest + Supertest + coverage)
+      - name: Upload frontend build (dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-frontend-dist
+          path: dist
+
+  backend:
+    name: Backend - test + build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,13 +62,23 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Cache npm (backend)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-backend-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-backend-
+
       - name: Install backend deps
         working-directory: backend
         run: npm install
 
       - name: Run backend tests
-        working-directory: backend
-        run: npm test
+        run: npm run test:backend
+
+      - name: Build backend
+        run: npm run build:backend
 
       - name: Upload backend coverage
         if: always()
@@ -59,3 +86,9 @@ jobs:
         with:
           name: coverage-backend
           path: backend/coverage
+
+      - name: Upload backend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-backend
+          path: backend/build
