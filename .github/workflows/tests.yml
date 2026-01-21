@@ -19,16 +19,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
 
-      - name: Cache npm (frontend)
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-frontend-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-frontend-
-
-      - name: Install deps
+      - name: Install deps (frontend)
         run: npm install
 
       - name: Run frontend tests
@@ -61,23 +55,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Cache npm (backend)
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-backend-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-backend-
-
-      - name: Install deps
+      - name: Install deps (backend)
+        working-directory: backend
         run: npm install
 
       - name: Run backend tests
-        run: npm run test:backend
+        working-directory: backend
+        run: npm test -- --coverage
 
       - name: Build backend
-        run: npm run build:backend
+        working-directory: backend
+        run: npm run build
 
       - name: Upload backend coverage
         if: always()
