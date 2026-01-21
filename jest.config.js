@@ -4,5 +4,6 @@ module.exports = {
   collectCoverageFrom: [
     "app.js"
   ],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   coverageDirectory: "coverage/frontend"
 };
