@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install frontend deps
         run: npm install
@@ -28,6 +27,7 @@ jobs:
         run: npm run test:frontend
 
       - name: Upload frontend coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-frontend
@@ -44,7 +44,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install backend deps
         working-directory: backend
@@ -55,6 +54,7 @@ jobs:
         run: npm test
 
       - name: Upload backend coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-backend
