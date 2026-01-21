@@ -22,7 +22,7 @@ jobs:
           cache: "npm"
 
       - name: Install frontend deps
-        run: npm ci
+        run: npm install
 
       - name: Run frontend tests
         run: npm run test:frontend
@@ -45,11 +45,10 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: backend/package-lock.json
 
       - name: Install backend deps
         working-directory: backend
-        run: npm ci
+        run: npm install
 
       - name: Run backend tests
         working-directory: backend
