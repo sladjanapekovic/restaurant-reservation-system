@@ -28,7 +28,7 @@ app.post("/api/reservations", (req, res) => {
     name,
     date,
     time,
-    guests: Number(guests)
+    guests: Number(guests),
   };
 
   reservations.push(reservation);
@@ -40,7 +40,7 @@ app.delete("/api/reservations/:id", (req, res) => {
   const id = Number(req.params.id);
   const before = reservations.length;
 
-  reservations = reservations.filter(r => r.id !== id);
+  reservations = reservations.filter((r) => r.id !== id);
 
   if (reservations.length === before) {
     return res.status(404).json({ error: "Not found" });
@@ -49,7 +49,17 @@ app.delete("/api/reservations/:id", (req, res) => {
   res.json({ deleted: true });
 });
 
+// ✅ Render/Cloud: koristi PORT iz environment-a
+const PORT = process.env.PORT || 3000;
+
+// ✅ Pokreni server samo kad se fajl izvršava direktno (ne u testovima)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 module.exports = {
   app,
-  _reset: () => (reservations = [])
+  _reset: () => (reservations = []),
 };
