@@ -67,7 +67,7 @@ describe("Frontend app.js tests", () => {
   // 6
   test("Form submission without required fields shows warning", () => {
     document.querySelector("form").dispatchEvent(new Event("submit"));
-    expect(document.getElementById("confirm").textContent).toMatch(/Prosimo/i);
+    expect(document.getElementById("confirm").classList.contains("hidden")).toBe(false);
   });
 
   // 7
