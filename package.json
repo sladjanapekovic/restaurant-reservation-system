@@ -6,6 +6,8 @@
     "test:frontend": "jest -c jest.frontend.config.js --coverage",
     "test:backend": "jest -c jest.backend.config.js --coverage",
     "test": "npm run test:frontend && npm run test:backend"
+    "build:frontend": "rm -rf dist && mkdir dist && cp index.html app.js style.css dist/",
+    "build:backend": "rm -rf backend/build && mkdir -p backend/build && cp backend/*.js backend/package.json backend/build/"
   },
   "devDependencies": {
     "jest": "^29.7.0",
